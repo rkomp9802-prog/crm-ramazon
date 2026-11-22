@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# env files (secrets)
+.env
+.env*.local
+
+# local SQLite database
+local.db
+local.db-*
+
+# misc
+.DS_Store
+*.log
+.vercel

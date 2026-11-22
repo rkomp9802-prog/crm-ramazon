@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* Дизайн-токены CRM. Используются как bg-canvas, text-ink, border-line, bg-accent и т.д. */
+@theme {
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  --color-canvas: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-ink: #171a21;
+  --color-muted: #626a77;
+  --color-line: #e2e5ea;
+  --color-accent: #2d5bd8;
+  --color-accent-strong: #2148b5;
+  --color-accent-soft: #eaf0fd;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply min-h-screen bg-canvas text-ink antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
