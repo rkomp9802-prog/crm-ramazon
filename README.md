@@ -27,6 +27,10 @@ npm run dev                  # http://localhost:3000
 | `npm run seed:admin` | создать admin из `ADMIN_EMAIL` / `ADMIN_PASSWORD`, если его ещё нет |
 | `npm run seed:demo` | демо-данные; только в локальную базу и только если заявок ещё нет (`--force`, `--allow-remote`) |
 
+## CI (GitHub Actions)
+
+При каждом push и pull request в `main` workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) на чистой Ubuntu (Node 24) выполняет `npm ci`, `npm run typecheck`, `npm test` и `npm run build`. Секреты не нужны: используются заглушки. Результат — во вкладке **Actions** репозитория на GitHub (и галочка/крестик у коммита).
+
 ## Деплой на Vercel + Turso
 
 Продакшен: https://crm-ramazon.vercel.app — проект Vercel `crm-ramazon`, подключён к GitHub-репозиторию `rkomp9802-prog/crm-ramazon`.
