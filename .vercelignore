@@ -1,0 +1,7 @@
+# Не загружать на Vercel: секреты, локальные базы, тестовые артефакты.
+.env
+.env*.local
+local.db
+local.db-*
+.test-dbs
+.claude
