@@ -45,6 +45,24 @@ npm run dev                  # http://localhost:3000
 
 Ручной деплой без GitHub (PowerShell): `npx.cmd vercel@64.7.0 deploy --prod`. Версия 64 — последняя на чистом JavaScript: более новые версии CLI при первом запуске докачивают свой исполняемый файл.
 
+## Telegram-бот
+
+Клиент пишет боту — в CRM появляется заявка (источник `telegram_bot`, статус «новая», без ответственного) и клиент с его `telegram_id`. Повторное сообщение того же человека создаёт новую заявку на того же клиента. У Telegram-клиента нет телефона: поле пустое, в интерфейсе показывается «—». Боту отвечает «Спасибо, ваша заявка принята…»; ошибка отправки ответа заявку не отменяет.
+
+Переменные (локально — `.env.local`, на Vercel — Production):
+- `TELEGRAM_BOT_TOKEN` — токен от @BotFather;
+- `TELEGRAM_WEBHOOK_SECRET` — случайная строка, например `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Без неё вебхук отвечает 401.
+
+Регистрация вебхука (после деплоя; значения подставьте из своих переменных, не публикуйте их):
+
+```powershell
+curl.exe -sS "https://api.telegram.org/bot$env:TELEGRAM_BOT_TOKEN/setWebhook" `
+  -d "url=https://crm-ramazon.vercel.app/api/telegram/webhook" `
+  -d "secret_token=$env:TELEGRAM_WEBHOOK_SECRET"
+```
+
+Проверка: `getWebhookInfo` с тем же токеном — поле `last_error_message` должно быть пустым.
+
 ## Роли
 
 - **admin** — все заявки, клиенты, задачи; управление сотрудниками; полная аналитика с разбивкой по сотрудникам.

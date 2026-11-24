@@ -63,7 +63,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
                         {client.name}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 whitespace-nowrap tabular-nums">{client.phone}</td>
+                    <td className="px-5 py-3 whitespace-nowrap tabular-nums">{client.phone || "—"}</td>
                     <td className="px-5 py-3 text-muted">{client.email ?? "—"}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{client.leads_count}</td>
                     <td className="px-5 py-3 whitespace-nowrap text-muted">{formatDate(client.created_at)}</td>

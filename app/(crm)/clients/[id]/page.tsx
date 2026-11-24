@@ -57,9 +57,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             <div>
               <dt className="text-xs text-muted">Телефон</dt>
               <dd>
-                <a href={`tel:${client.phone.replace(/[^\d+]/g, "")}`} className="tabular-nums hover:text-accent">
-                  {client.phone}
-                </a>
+                {client.phone ? (
+                  <a href={`tel:${client.phone.replace(/[^\d+]/g, "")}`} className="tabular-nums hover:text-accent">
+                    {client.phone}
+                  </a>
+                ) : (
+                  "—"
+                )}
               </dd>
             </div>
             <div>

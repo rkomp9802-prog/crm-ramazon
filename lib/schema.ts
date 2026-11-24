@@ -79,6 +79,16 @@ const COLUMN_MIGRATIONS = [
     column: "session_version",
     ddl: "alter table users add column session_version integer not null default 0",
   },
+  {
+    table: "clients",
+    column: "telegram_id",
+    ddl: "alter table clients add column telegram_id text",
+  },
+];
+
+/** Индексы по колонкам из COLUMN_MIGRATIONS: создаются после них, иначе на старой базе колонки ещё нет. */
+const POST_MIGRATION_INDEXES = [
+  "create unique index if not exists idx_clients_telegram_id on clients(telegram_id) where telegram_id is not null",
 ];
 
 /** Идемпотентно: можно запускать сколько угодно раз. */
@@ -95,6 +105,7 @@ export async function migrate(db: Client): Promise<void> {
       }
     }
   }
+  for (const ddl of POST_MIGRATION_INDEXES) await db.execute(ddl);
 }
 
 let schemaReady: Promise<void> | null = null;

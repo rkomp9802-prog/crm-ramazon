@@ -79,9 +79,13 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             <div>
               <dt className="text-xs text-muted">Телефон</dt>
               <dd>
-                <a href={`tel:${lead.client_phone.replace(/[^\d+]/g, "")}`} className="tabular-nums hover:text-accent">
-                  {lead.client_phone}
-                </a>
+                {lead.client_phone ? (
+                  <a href={`tel:${lead.client_phone.replace(/[^\d+]/g, "")}`} className="tabular-nums hover:text-accent">
+                    {lead.client_phone}
+                  </a>
+                ) : (
+                  "—"
+                )}
               </dd>
             </div>
             <div>

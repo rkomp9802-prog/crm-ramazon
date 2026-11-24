@@ -5,7 +5,7 @@ import { SESSION_COOKIE, verifySession } from "@/lib/auth";
 // Здесь только быстрая проверка подписи JWT. Полная проверка (пользователь
 // существует, активен, актуальная роль из БД) — в lib/session.ts и в каждом API route.
 
-const PUBLIC_PATHS = new Set(["/login", "/api/auth/login", "/api/auth/logout"]);
+const PUBLIC_PATHS = new Set(["/login", "/api/auth/login", "/api/auth/logout", "/api/telegram/webhook"]);
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 function isAdminPath(pathname: string): boolean {

@@ -32,6 +32,10 @@ describe("proxy", () => {
     expect(passedThrough(await run("/api/auth/login", { method: "POST" }))).toBe(true);
   });
 
+  it("вебхук Telegram открыт без сессии и без Origin", async () => {
+    expect(passedThrough(await run("/api/telegram/webhook", { method: "POST" }))).toBe(true);
+  });
+
   it("поддельный токен не принимается", async () => {
     const response = await run("/dashboard", { token: "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJ4In0.forged" });
     expect(response.status).toBe(307);
