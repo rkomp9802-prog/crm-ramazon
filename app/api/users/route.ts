@@ -41,6 +41,10 @@ export const PATCH = route(async (request) => {
   if (has(body, "is_active")) patch.is_active = readBoolean(body.is_active, "Активен");
   if (has(body, "password")) patch.password = readNewPassword(body.password, MIN_PASSWORD_LENGTH);
 
+  // Сброс через управление сотрудниками делает пароль временным и завершает сеансы — себе это не нужно.
+  if (id === admin.id && patch.password !== undefined) {
+    throw new HttpError(400, "Свой пароль меняйте на странице «Смена пароля»");
+  }
   // Не даём администратору случайно запереть самого себя.
   if (id === admin.id && (patch.role === "manager" || patch.is_active === false)) {
     throw new HttpError(400, "Нельзя снять с себя роль администратора или деактивировать себя");

@@ -8,6 +8,8 @@ export interface User {
   role: UserRole;
   created_at: string;
   is_active: boolean;
+  /** Пароль выдан администратором — при входе сотрудник обязан задать свой. */
+  must_change_password: boolean;
 }
 
 /** Короткая запись сотрудника для выпадающих списков. */

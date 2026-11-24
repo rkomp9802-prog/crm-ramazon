@@ -20,7 +20,7 @@ function generatePassword(): string {
 
 function PasswordField({ value, onChange, id }: { value: string; onChange: (value: string) => void; id: string }) {
   return (
-    <Field label="Временный пароль" htmlFor={id} hint={`Не короче ${MIN_PASSWORD_LENGTH} символов. Передайте его сотруднику лично.`}>
+    <Field label="Временный пароль" htmlFor={id} hint={`Не короче ${MIN_PASSWORD_LENGTH} символов. Передайте лично — при входе сотрудник задаст свой.`}>
       <div className="flex gap-2">
         <Input
           id={id}
@@ -132,7 +132,8 @@ export function PasswordResetForm({ user, onDone, onCancel }: { user: User; onDo
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <p className="text-sm text-muted">
-        Новый пароль для <span className="font-medium text-ink">{user.name}</span> ({user.email}).
+        Временный пароль для <span className="font-medium text-ink">{user.name}</span> ({user.email}). Все сеансы
+        сотрудника завершатся, при входе он задаст свой пароль.
       </p>
       <PasswordField id="reset-password" value={password} onChange={setPassword} />
       <FormError message={error} />

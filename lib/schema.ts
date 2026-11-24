@@ -1,4 +1,5 @@
 import type { Client } from "@libsql/client";
+import { getDb } from "@/lib/turso";
 
 /**
  * Схема из спецификации (раздел 3.2) плюс два служебных поля:
@@ -14,7 +15,16 @@ export const SCHEMA: string[] = [
     password_hash text not null,
     role text not null default 'manager' check (role in ('admin', 'manager')),
     is_active integer not null default 1,
+    must_change_password integer not null default 0,
+    session_version integer not null default 0,
     created_at text not null
+  )`,
+  // Неудачные попытки входа / смены пароля — для ограничения перебора (lib/rate-limit.ts).
+  `create table if not exists login_attempts (
+    key text primary key,
+    failures integer not null,
+    window_start text not null,
+    blocked_until text
   )`,
   `create table if not exists clients (
     id text primary key,
@@ -57,6 +67,46 @@ export const SCHEMA: string[] = [
   `create index if not exists idx_tasks_client_id on tasks(client_id)`,
 ];
 
+/** Колонки, добавленные после первой версии: на старых базах добавляются через ALTER TABLE. */
+const COLUMN_MIGRATIONS = [
+  {
+    table: "users",
+    column: "must_change_password",
+    ddl: "alter table users add column must_change_password integer not null default 0",
+  },
+  {
+    table: "users",
+    column: "session_version",
+    ddl: "alter table users add column session_version integer not null default 0",
+  },
+];
+
+/** Идемпотентно: можно запускать сколько угодно раз. */
 export async function migrate(db: Client): Promise<void> {
   await db.batch(SCHEMA, "write");
+  for (const migration of COLUMN_MIGRATIONS) {
+    const info = await db.execute(`pragma table_info(${migration.table})`);
+    if (!info.rows.some((row) => row.name === migration.column)) {
+      try {
+        await db.execute(migration.ddl);
+      } catch (error) {
+        // Параллельный запуск (второй экземпляр приложения) мог уже добавить колонку.
+        if (!/duplicate column/i.test(error instanceof Error ? error.message : String(error))) throw error;
+      }
+    }
+  }
+}
+
+let schemaReady: Promise<void> | null = null;
+
+/**
+ * Схема применяется один раз за жизнь процесса, при первом обращении к БД.
+ * Так приложение не упадёт с 500, если после обновления кода забыли `npm run db:migrate`.
+ */
+export function ensureSchema(): Promise<void> {
+  schemaReady ??= migrate(getDb()).catch((error: unknown) => {
+    schemaReady = null; // следующий запрос попробует снова
+    throw error;
+  });
+  return schemaReady;
 }

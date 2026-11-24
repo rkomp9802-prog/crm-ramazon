@@ -11,6 +11,11 @@ const BCRYPT_ROUNDS = 10;
 export interface SessionPayload {
   userId: string;
   role: UserRole;
+  /**
+   * Версия сессий пользователя (users.session_version). Смена или сброс пароля увеличивает её —
+   * все ранее выданные токены перестают приниматься.
+   */
+  sessionVersion: number;
 }
 
 function getSecret(): Uint8Array {
@@ -22,7 +27,7 @@ function getSecret(): Uint8Array {
 }
 
 export async function signSession(payload: SessionPayload): Promise<string> {
-  return new SignJWT({ userId: payload.userId, role: payload.role })
+  return new SignJWT({ userId: payload.userId, role: payload.role, sv: payload.sessionVersion })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE_SECONDS}s`)
@@ -35,9 +40,10 @@ export async function verifySession(token: string | undefined): Promise<SessionP
   const secret = getSecret();
   try {
     const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
-    const { userId, role } = payload as Record<string, unknown>;
+    const { userId, role, sv } = payload as Record<string, unknown>;
     if (typeof userId !== "string" || (role !== "admin" && role !== "manager")) return null;
-    return { userId, role };
+    // Токены, выданные до появления версий сессий, считаются версией 0.
+    return { userId, role, sessionVersion: typeof sv === "number" ? sv : 0 };
   } catch {
     return null;
   }

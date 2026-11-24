@@ -25,9 +25,16 @@ export function route<C = unknown>(handler: Handler<C>): Handler<C> {
   };
 }
 
-export async function requireApiUser(): Promise<User> {
+/**
+ * Текущий пользователь или 401. Сотрудник с временным паролем получает 403 везде,
+ * кроме смены пароля (allowPendingPasswordChange).
+ */
+export async function requireApiUser(options: { allowPendingPasswordChange?: boolean } = {}): Promise<User> {
   const user = await getCurrentUser();
   if (!user) throw new HttpError(401, "Требуется вход");
+  if (user.must_change_password && !options.allowPendingPasswordChange) {
+    throw new HttpError(403, "Сначала смените временный пароль");
+  }
   return user;
 }
 

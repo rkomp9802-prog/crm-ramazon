@@ -95,11 +95,18 @@ export function UsersTable({ users, currentUserId }: { users: User[]; currentUse
                     >
                       {user.is_active ? "Активен" : "Деактивирован"}
                     </span>
+                    {user.must_change_password ? <div className="mt-1 text-xs text-muted">временный пароль</div> : null}
                   </td>
                   <td className="px-5 py-3 whitespace-nowrap text-muted">{formatDate(user.created_at)}</td>
                   <td className="px-5 py-3">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm" disabled={busy} onClick={() => setResetUser(user)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={busy || isSelf}
+                        title={isSelf ? "Свой пароль меняется на странице «Смена пароля»" : undefined}
+                        onClick={() => setResetUser(user)}
+                      >
                         Новый пароль
                       </Button>
                       <Button
