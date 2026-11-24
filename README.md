@@ -29,9 +29,17 @@ npm run dev                  # http://localhost:3000
 
 ## Деплой на Vercel + Turso
 
-1. `turso db create crm` → `turso db show crm --url` и `turso db tokens create crm`.
-2. Локально с этими значениями в `.env.local` выполните `npm run seed:admin` — создаст схему и админа в Turso.
-3. В Vercel задайте переменные `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `JWT_SECRET`, `APP_TIMEZONE`.
+Продакшен: https://crm-ramazon.vercel.app — проект Vercel `crm-ramazon`, подключён к GitHub-репозиторию `rkomp9802-prog/crm-ramazon`.
+
+**Автодеплой:** каждый `git push` в `main` сам собирает и выкладывает продакшен. Push в другие ветки получает отдельный preview-адрес, но переменные базы заданы только для Production — на preview вход работать не будет (так задумано, чтобы preview не писал в боевую базу; для preview заведите отдельную базу Turso).
+
+Первичная настройка (уже сделана):
+1. `turso db create …` → `turso db show … --url` и `turso db tokens create …`, значения — в `.env.local`.
+2. `npm run seed:admin` — создаст схему и первого администратора в Turso.
+3. В проекте Vercel заданы `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `JWT_SECRET` (свой, не как в `.env.local`) и `APP_TIMEZONE` — для Production.
+4. `vercel.json` задаёт фреймворк `nextjs`; `.vercelignore` не даёт загрузить на Vercel секреты и локальную базу.
+
+Ручной деплой без GitHub (PowerShell): `npx.cmd vercel@64.7.0 deploy --prod`. Версия 64 — последняя на чистом JavaScript: более новые версии CLI при первом запуске докачивают свой исполняемый файл.
 
 ## Роли
 
